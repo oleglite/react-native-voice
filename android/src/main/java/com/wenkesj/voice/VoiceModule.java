@@ -10,6 +10,9 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.media.AudioManager;
+import android.content.Context;
+import android.os.Handler;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.Arguments;
@@ -47,6 +50,39 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
     }
 
     return Locale.getDefault().toString();
+  }
+
+  private void muteAudio() {
+    AudioManager mgr = (AudioManager)this.reactContext.getSystemService(Context.AUDIO_SERVICE);
+//    mgr.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
+//    mgr.setStreamMute(AudioManager.STREAM_ALARM, true);
+    mgr.setStreamMute(AudioManager.STREAM_MUSIC, true);
+//    mgr.setStreamMute(AudioManager.STREAM_RING, true);
+    mgr.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+  }
+
+  private void unmuteAudio() {
+    AudioManager mgr = (AudioManager)this.reactContext.getSystemService(Context.AUDIO_SERVICE);
+//    mgr.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
+//    mgr.setStreamMute(AudioManager.STREAM_ALARM, false);
+    mgr.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//    mgr.setStreamMute(AudioManager.STREAM_RING, false);
+    mgr.setStreamMute(AudioManager.STREAM_SYSTEM, false);
+  }
+
+  private void muteTemporary(long delay) {
+    // Unmute after delay ms
+
+    final VoiceModule self = this;
+
+    self.muteAudio();
+    final Handler handler = new Handler();
+    handler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        self.unmuteAudio();
+      }
+    }, delay);
   }
 
   private void startListening(ReadableMap opts) {
@@ -105,6 +141,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
     }
 
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, getLocale(this.locale));
+    this.muteTemporary(1500);
     speech.startListening(intent);
   }
 
@@ -261,6 +298,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
     sendEvent("onSpeechEnd", event);
     Log.d("ASR", "onEndOfSpeech()");
     isRecognizing = false;
+    this.muteTemporary(1500);
   }
 
   @Override
