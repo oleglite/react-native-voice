@@ -58,7 +58,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
 //    mgr.setStreamMute(AudioManager.STREAM_ALARM, true);
     mgr.setStreamMute(AudioManager.STREAM_MUSIC, true);
 //    mgr.setStreamMute(AudioManager.STREAM_RING, true);
-    mgr.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+//    mgr.setStreamMute(AudioManager.STREAM_SYSTEM, true);
   }
 
   private void unmuteAudio() {
@@ -67,7 +67,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
 //    mgr.setStreamMute(AudioManager.STREAM_ALARM, false);
     mgr.setStreamMute(AudioManager.STREAM_MUSIC, false);
 //    mgr.setStreamMute(AudioManager.STREAM_RING, false);
-    mgr.setStreamMute(AudioManager.STREAM_SYSTEM, false);
+//    mgr.setStreamMute(AudioManager.STREAM_SYSTEM, false);
   }
 
   private void muteTemporary(long delay) {
@@ -141,6 +141,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
     }
 
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, getLocale(this.locale));
+    intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
     this.muteTemporary(1500);
     speech.startListening(intent);
   }
